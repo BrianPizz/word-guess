@@ -8,7 +8,7 @@ export const Game = () => {
     }
   return (
     <div className="w-full h-full flex justify-center">
-      <div className="max-h-[700px] w-full max-w-xl flex flex-col items-center py-8 justify-between">
+      <div className="max-h-[700px] w-full max-w-lg flex flex-col items-center py-8 justify-between">
         <div className="flex flex-col gap-2">
         {Array.from({ length: GAME_ROUNDS }).map((_, idx) => {
           return <GuessRow key={idx} letters="" />;
