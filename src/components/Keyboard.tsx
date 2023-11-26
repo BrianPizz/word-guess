@@ -9,9 +9,11 @@ const ROWS = [
 
 type Props = {
   onKeyPress: (key: string) => void;
+  solution: string;
+  guesses: Array<string>
 };
 
-export const Keyboard = ({ onKeyPress }: Props) => {
+export const Keyboard = ({ onKeyPress, solution, guesses }: Props) => {
   return (
     <div className="w-full flex flex-col gap-1">
       {ROWS.map((letters, idx) => {
@@ -41,7 +43,7 @@ export const Key = ({ letter, onKeyPress }: KeyProps) => {
       className={classNames(
         {
           ["flex-1"]: letter !== ENTER && letter !== BACKSPACE,
-          ["flex-[2]"]: letter === ENTER || letter === BACKSPACE,
+          ["flex-[1.5]"]: letter === ENTER || letter === BACKSPACE,
         },
         "bg-gray-500 rounded-md flex-1 h-14 font-bold text-lg justify-center items-center flex active:bg-slate-400"
       )}

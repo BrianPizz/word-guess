@@ -5,37 +5,40 @@ import { Keyboard } from "./Keyboard";
 import { useCurrentGuessReducer } from "./useCurrentGuessReducer";
 import { isValidWord } from "./isValidWord";
 
-export const Game = () => {
+type Props = {
+  solution: string;
+};
+
+export const Game = ({ solution }: Props) => {
   const [currentGuess, dispatch] = useCurrentGuessReducer();
-  const [guesses, setGuesses] = useState<Array<string>>([])
+  const [guesses, setGuesses] = useState<Array<string>>([]);
 
   const onKeyPress = useCallback(
     (key: string) => {
-
-      if (key === BACKSPACE){
-        dispatch({type: 'backspace'})
+      if (key === BACKSPACE) {
+        dispatch({ type: "backspace" });
         return;
       }
 
-      if (key === ENTER){
-        if(currentGuess.length !== GAME_WORD_LEN) {
-            // TODO not enough letters
-            return
+      if (key === ENTER) {
+        if (currentGuess.length !== GAME_WORD_LEN) {
+          // TODO not enough letters
+          return;
         }
-        if(!isValidWord(currentGuess)) {
-            // TODO shake text
-            console.log('not a valid word!')
-            return
+        if (!isValidWord(currentGuess)) {
+          // TODO shake text
+          console.log("not a valid word!");
+          return;
         }
         setGuesses([...guesses, currentGuess]);
-        dispatch({ type: 'clear' })
+        dispatch({ type: "clear" });
         // TODO submit
-        return
+        return;
       }
-      if (key.length !== 1 || !/[a-z]|[A_Z]/.test(key)){
-        return
+      if (key.length !== 1 || !/[a-z]|[A_Z]/.test(key)) {
+        return;
       }
-      dispatch({type: 'add', letter: key.toUpperCase() })
+      dispatch({ type: "add", letter: key.toUpperCase() });
     },
     [dispatch, currentGuess, guesses]
   );
@@ -57,10 +60,22 @@ export const Game = () => {
       <div className="max-h-[700px] w-full max-w-lg flex flex-col items-center py-8 justify-between">
         <div className="flex flex-col gap-2">
           {Array.from({ length: GAME_ROUNDS }).map((_, idx) => {
-            return <GuessRow key={idx} guess={idx === guesses.length ? currentGuess : guesses[idx]} />;
+            const isSubmitted = idx < guesses.length;
+            return (
+              <GuessRow
+                key={idx}
+                guess={idx === guesses.length ? currentGuess : guesses[idx]}
+                isSubmitted={isSubmitted}
+                solution={solution}
+              />
+            );
           })}
         </div>
-        <Keyboard onKeyPress={onKeyPress} />
+        <Keyboard
+          onKeyPress={onKeyPress}
+          solution={solution}
+          guesses={guesses}
+        />
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ function App() {
     <>
     <div className="h-full flex flex-col">
       <Header />
-      <Game />
+      <Game solution="REACT"/>
     </div>
     </>
   )
