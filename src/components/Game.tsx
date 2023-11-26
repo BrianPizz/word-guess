@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { GAME_ROUNDS, BACKSPACE, ENTER } from "../constants";
+import { GAME_ROUNDS, BACKSPACE, ENTER, GAME_WORD_LEN } from "../constants";
 import { GuessRow } from "./GuessRow";
 import { Keyboard } from "./Keyboard";
 import { useCurrentGuessReducer } from "./useCurrentGuessReducer";
@@ -10,7 +10,6 @@ export const Game = () => {
 
   const onKeyPress = useCallback(
     (key: string) => {
-      console.log(key);
 
       if (key === BACKSPACE){
         dispatch({type: 'backspace'})
@@ -18,8 +17,13 @@ export const Game = () => {
       }
 
       if (key === ENTER){
+        if(currentGuess.length !== GAME_WORD_LEN) {
+            // TODO not enough letters
+            return
+        }
+        setGuesses([...guesses, currentGuess]);
+        dispatch({ type: 'clear' })
         // TODO submit
-        
         return
       }
       if (key.length !== 1 || !/[a-z]|[A_Z]/.test(key)){
@@ -27,7 +31,7 @@ export const Game = () => {
       }
       dispatch({type: 'add', letter: key.toUpperCase() })
     },
-    [dispatch]
+    [dispatch, currentGuess, guesses]
   );
 
   const onKeyDownEvt = useCallback(
@@ -47,7 +51,7 @@ export const Game = () => {
       <div className="max-h-[700px] w-full max-w-lg flex flex-col items-center py-8 justify-between">
         <div className="flex flex-col gap-2">
           {Array.from({ length: GAME_ROUNDS }).map((_, idx) => {
-            return <GuessRow key={idx} guess={idx === 0 ? currentGuess : ''} />;
+            return <GuessRow key={idx} guess={idx === guesses.length ? currentGuess : guesses[idx]} />;
           })}
         </div>
         <Keyboard onKeyPress={onKeyPress} />
