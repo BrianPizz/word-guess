@@ -3,6 +3,7 @@ import { GAME_ROUNDS, BACKSPACE, ENTER, GAME_WORD_LEN } from "../constants";
 import { GuessRow } from "./GuessRow";
 import { Keyboard } from "./Keyboard";
 import { useCurrentGuessReducer } from "./useCurrentGuessReducer";
+import { isValidWord } from "./isValidWord";
 
 export const Game = () => {
   const [currentGuess, dispatch] = useCurrentGuessReducer();
@@ -19,6 +20,11 @@ export const Game = () => {
       if (key === ENTER){
         if(currentGuess.length !== GAME_WORD_LEN) {
             // TODO not enough letters
+            return
+        }
+        if(!isValidWord(currentGuess)) {
+            // TODO shake text
+            console.log('not a valid word!')
             return
         }
         setGuesses([...guesses, currentGuess]);
