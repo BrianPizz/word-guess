@@ -1,0 +1,18 @@
+.defaultKey {
+    @apply bg-gray-500;
+}
+
+.wrong{
+    @apply bg-gray-700;
+    @apply border-gray-700;
+}
+
+.correct {
+    @apply bg-green-600;
+    @apply border-green-600;
+}
+
+.wrongPlace {
+    @apply bg-yellow-500;
+    @apply border-yellow-500;
+}

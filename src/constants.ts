@@ -5,3 +5,5 @@ export const GAME_ROUNDS = 6;
 export const ENTER = 'Enter';
 
 export const BACKSPACE = 'Backspace';
+
+export type LetterState = "unsubmitted" | "correct" | "wrong" | "wrong-place";

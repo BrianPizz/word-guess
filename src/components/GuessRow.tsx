@@ -1,54 +1,15 @@
-import { GAME_WORD_LEN } from "../constants";
+import { GAME_WORD_LEN, LetterState } from "../constants";
 import classNames from "classnames";
 import css from "./GuessRow.module.css";
 
-const replaceCharAtIndex = (str: string, idx: number, newChar: string) => {
-  return str.substring(0, idx) + newChar + str.substring(idx + 1, str.length);
-};
-
-const getTileStates = (
-  solution: string,
-  guess: string | undefined,
-  isSubmitted: boolean
-) => {
-  const tileStates: Array<TileState> = Array.from<TileState>({
-    length: GAME_WORD_LEN,
-  }).fill("unsubmitted");
-  if (!isSubmitted || !guess) {
-    return tileStates;
-  }
-
-  for (let i = 0; i < solution.length; i++) {
-    if (guess[i] === solution[i]) {
-      tileStates[i] = "correct";
-      solution = replaceCharAtIndex(solution, i, " ");
-    }
-  }
-
-  for (let i = 0; i < solution.length; i++) {
-    if (tileStates[i] === "correct") {
-      continue;
-    }
-    console.log(solution, guess[i])
-    if (solution.includes(guess[i])) {
-      tileStates[i] = "wrong-place";
-      solution = replaceCharAtIndex(solution, solution.indexOf(guess[i]), " ");
-    } else {
-      tileStates[i] = "wrong";
-    }
-  }
-
-  return tileStates
-};
 
 type Props = {
   guess: string | undefined;
-  solution: string;
-  isSubmitted: boolean;
+  letterStates: Array<LetterState>
 };
 
-export const GuessRow = ({ guess, isSubmitted, solution }: Props) => {
-  const tileStates = getTileStates(solution, guess, isSubmitted);
+export const GuessRow = ({ guess, letterStates }: Props) => {
+
   return (
     <div className="flex gap-2">
       {Array.from({ length: GAME_WORD_LEN }).map((_, idx) => {
@@ -57,7 +18,7 @@ export const GuessRow = ({ guess, isSubmitted, solution }: Props) => {
           <Tile
             key={idx}
             letter={guess ? guess[idx] : ""}
-            state={tileStates[idx]}
+            state={letterStates[idx]}
           />
         );
       })}
@@ -65,11 +26,10 @@ export const GuessRow = ({ guess, isSubmitted, solution }: Props) => {
   );
 };
 
-type TileState = "unsubmitted" | "correct" | "wrong" | "wrong-place";
 
 type TileProps = {
   letter: string | undefined;
-  state: TileState;
+  state: LetterState;
 };
 
 export const Tile = ({ letter, state }: TileProps) => {

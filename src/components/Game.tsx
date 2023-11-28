@@ -1,9 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
-import { GAME_ROUNDS, BACKSPACE, ENTER, GAME_WORD_LEN } from "../constants";
+import {
+  GAME_ROUNDS,
+  BACKSPACE,
+  ENTER,
+  GAME_WORD_LEN,
+  LetterState,
+} from "../constants";
 import { GuessRow } from "./GuessRow";
 import { Keyboard } from "./Keyboard";
 import { useCurrentGuessReducer } from "./useCurrentGuessReducer";
 import { isValidWord } from "./isValidWord";
+import { getTileStates } from "./getTileStates";
 
 type Props = {
   solution: string;
@@ -55,6 +62,38 @@ export const Game = ({ solution }: Props) => {
     return () => window.removeEventListener("keydown", onKeyDownEvt);
   }, [onKeyDownEvt]);
 
+  const guessIdxToTileStates = Array.from({ length: GAME_ROUNDS }).map(
+    (_, idx) => {
+      const isSubmitted = idx < guesses.length;
+      return getTileStates(solution, guesses[idx], isSubmitted);
+    }
+  );
+
+  const letterToLetterState: { [letter: string]: LetterState } = {};
+  guessIdxToTileStates.forEach((tileStates, idx) => {
+    const guess = guesses[idx];
+    if (!guess) {
+      return;
+    }
+    tileStates.forEach((tileState, letterIdx) => {
+      const letter = guess[letterIdx];
+      if (tileState === "correct" || letterToLetterState[letter] === "correct") {
+        letterToLetterState[letterIdx] = "correct";
+        return;
+      }
+      if (
+        tileState === "wrong-place" ||
+        letterToLetterState[letter] === "wrong-place"
+      ) {
+        letterToLetterState[letterIdx] = "wrong-place";
+        return;
+      }
+      if (tileState === 'wrong') {
+        letterToLetterState[letter] = 'wrong'
+      }
+    });
+  });
+
   return (
     <div className="w-full h-full flex justify-center">
       <div className="max-h-[700px] w-full max-w-lg flex flex-col items-center py-8 justify-between">
@@ -65,16 +104,14 @@ export const Game = ({ solution }: Props) => {
               <GuessRow
                 key={idx}
                 guess={idx === guesses.length ? currentGuess : guesses[idx]}
-                isSubmitted={isSubmitted}
-                solution={solution}
+                letterStates={guessIdxToTileStates[idx]}
               />
             );
           })}
         </div>
         <Keyboard
           onKeyPress={onKeyPress}
-          solution={solution}
-          guesses={guesses}
+          letterToLetterState={letterToLetterState}
         />
       </div>
     </div>

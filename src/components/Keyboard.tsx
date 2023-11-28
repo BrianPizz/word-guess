@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import { ENTER, BACKSPACE } from "../constants";
+import { ENTER, BACKSPACE, LetterState } from "../constants";
+import css from "./Keyboard.module.css";
 
 const ROWS = [
   "QWERTYUIOP".split(""),
@@ -9,18 +10,25 @@ const ROWS = [
 
 type Props = {
   onKeyPress: (key: string) => void;
-  solution: string;
-  guesses: Array<string>
+  letterToLetterState: { [letter: string]: LetterState };
 };
 
-export const Keyboard = ({ onKeyPress, solution, guesses }: Props) => {
+export const Keyboard = ({ onKeyPress, letterToLetterState }: Props) => {
   return (
     <div className="w-full flex flex-col gap-1">
       {ROWS.map((letters, idx) => {
         return (
           <div className="flex w-full gap-1" key={idx}>
             {letters.map((letter, idx) => {
-              return <Key key={idx} letter={letter} onKeyPress={onKeyPress} />;
+              return (
+                <Key
+                  key={idx}
+                  letter={letter}
+                  onKeyPress={onKeyPress}
+                  letterState={letterToLetterState[letter] ?? 'unsubmitted'}
+          
+                />
+              );
             })}
           </div>
         );
@@ -32,20 +40,28 @@ export const Keyboard = ({ onKeyPress, solution, guesses }: Props) => {
 type KeyProps = {
   letter: string;
   onKeyPress: (key: string) => void;
+  letterState: LetterState
 };
 
-export const Key = ({ letter, onKeyPress }: KeyProps) => {
+export const Key = ({ letter, onKeyPress, letterState }: KeyProps) => {
   if (letter === " ") {
     return <div className="flex-[0.5]"></div>;
   }
+
+  console.log(letter, letterState)
+
   return (
     <button
       className={classNames(
         {
           ["flex-1"]: letter !== ENTER && letter !== BACKSPACE,
           ["flex-[1.5]"]: letter === ENTER || letter === BACKSPACE,
+          [css.defaultKey]: letterState === 'unsubmitted',
+          [css.correct]: letterState === 'correct',
+          [css.wrong]: letterState === 'wrong',
+          [css.wrongPlace]: letterState === 'wrong-place',
         },
-        "bg-gray-500 rounded-md flex-1 h-14 font-bold text-lg justify-center items-center flex active:bg-slate-400"
+        "rounded-md flex-1 h-14 font-bold text-lg justify-center items-center flex"
       )}
       onClick={() => onKeyPress(letter)}
     >
